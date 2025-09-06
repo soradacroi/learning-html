@@ -1,0 +1,62 @@
+This file explains the code for moveablepopups.html. The file has three parts: HTML, CSS, and JS.
+
+-> HTML is the page structure.
+
+-> CSS handles the look.
+
+-> JS makes the popups work.
+
+HTML Structure
+-> The main part is a div with the class main-container.
+
+-> It holds a button-container for the two buttons.
+
+-> Two hidden popup divs are below the buttons, each with a header and a close button.
+
+CSS Styling
+-> body: Centers content and removes default margins.
+
+-> .main-container: Centers text.
+
+-> .button-container: Arranges buttons side-by-side with a gap.
+
+-> .action-button: Adds padding and font size.
+
+-> .popup: Starts hidden (display: none), stays in place (position: fixed), and is centered (transform). z-index puts it on top.
+
+-> .popup-header: The draggable area. The cursor is set to move.
+
+-> .close-button: Styles the close button.
+
+JavaScript Functionality
+The code runs once the HTML page is loaded.
+
+-> Element References: The script gets references to all necessary HTML elements, such as the buttons, popups, and headers.
+
+-> Open/Close Logic:
+-> Clicking a button changes the corresponding popup's 'display' property to 'block', making it visible.
+-> The script loops through all close buttons. Clicking one finds its parent popup and sets its 'display' back to 'none', hiding it.
+
+-> Dragging Logic:
+-> This part handles dragging with a few variables:
+-> 'isDragging': A boolean that is 'true' when a popup is being moved, and 'false' otherwise.
+-> 'startX', 'startY': Stores the mouse's starting position in pixels.
+-> 'currentPopup': A reference to the specific popup currently being dragged.
+-> 'zIndexCounter': A number that gets higher each time you click a popup. This makes the active popup appear on top of any others.
+
+-> Drag Event Listeners:
+-> 'mousedown': This listener is on each popup. When you click the mouse button on a popup's header, it:
+-> Sets 'isDragging' to 'true'.
+-> Stores the current mouse position in 'startX' and 'startY'.
+-> Sets the popup's 'zIndex' to a higher number to bring it to the front.
+-> Changes the popup's 'position' property to 'absolute' so it can be moved.
+-> Stops default browser behavior like text selection.
+
+-> 'mousemove': This listener is on the entire page. It checks if 'isDragging' is true. If it is, it:
+-> Calculates how far the mouse has moved ('dx' and 'dy').
+-> Adds that movement distance to the popup's current 'left' and 'top' position, moving the popup with the mouse.
+-> Resets 'startX' and 'startY' to the new position for the next movement.
+
+-> 'mouseup': This listener is on the entire page. When you release the mouse button, it:
+-> Sets 'isDragging' to 'false', which stops the 'mousemove' function from running.
+-> Clears the 'currentPopup' reference.
