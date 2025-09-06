@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Button and Popup Test</title>
+    <style>
+        /*
+         * CSS for the main body and layout.
+         * This centers the content both horizontally and vertically.
+         */
+        body {
+            font-family: sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #fff;
+            color: #000;
+        }
+
+        /* Styling for the container that holds the buttons. */
+        .main-container {
+            text-align: center;
+            padding: 20px;
+        }
+
+        /* Styling for the row of buttons. */
+        .button-container {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        /* General styling for the action buttons. */
+        .action-button {
+            padding: 10px 20px;
+            font-size: 16px;
+        }
+
+        /*
+         * CSS for the popup windows.
+         * The 'display: none' property hides them initially.
+         * 'position: fixed' keeps them in the viewport as you scroll.
+         * The 'transform' property perfectly centers the popup.
+         */
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            padding: 20px;
+            background-color: #fff;
+            border: 1px solid #000;
+            z-index: 1000;
+        }
+
+        /* Styling for the header of the popup, which is the draggable area. */
+        .popup-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            cursor: move; /* Changes cursor to a move icon to indicate it's draggable. */
+        }
+
+        /* Styling for the close button. */
+        .close-button {
+            background: none;
+            border: none;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="main-container">
+        <div class="button-container">
+            <!-- Button to open Popup 1 -->
+            <button id="button1" class="action-button">Open Popup 1</button>
+            <!-- Button to open Popup 2 -->
+            <button id="button2" class="action-button">Open Popup 2</button>
+        </div>
+    </div>
+
+    <!-- Popup 1 container. It is hidden by default. -->
+    <div id="popup1" class="popup">
+        <div class="popup-header">
+            <h2>Popup 1</h2>
+            <button class="close-button">&times;</button>
+        </div>
+    </div>
+
+    <!-- Popup 2 container. It is hidden by default. -->
+    <div id="popup2" class="popup">
+        <div class="popup-header">
+            <h2>Popup 2</h2>
+            <button class="close-button">&times;</button>
+        </div>
+    </div>
+
+    <script>
+        /*
+         * JavaScript for handling button clicks and popup dragging.
+         * The code runs once the page's DOM is fully loaded.
+         */
+        document.addEventListener('DOMContentLoaded', () => {
+            const button1 = document.getElementById('button1');
+            const button2 = document.getElementById('button2');
+            const popup1 = document.getElementById('popup1');
+            const popup2 = document.getElementById('popup2');
+            const closeButtons = document.querySelectorAll('.close-button');
+            const popups = document.querySelectorAll('.popup');
+            const popupHeaders = document.querySelectorAll('.popup-header');
+
+            // Add a click event listener to button1 to show popup1.
+            button1.addEventListener('click', () => { popup1.style.display = 'block'; });
+            // Add a click event listener to button2 to show popup2.
+            button2.addEventListener('click', () => { popup2.style.display = 'block'; });
+
+            // Iterate over all close buttons to add a click listener to each.
+            closeButtons.forEach(button => {
+                button.addEventListener('click', (event) => {
+                    // Find the closest parent with the class '.popup' and hide it.
+                    event.target.closest('.popup').style.display = 'none';
+                });
+            });
+
+            //
+            // Dragging logic for the popups.
+            //
+            let isDragging = false;
+            let startX, startY, currentPopup;
+            let zIndexCounter = 1000;
+
+            // Loop through each popup to add a 'mousedown' event listener.
+            popups.forEach(popup => {
+                popup.addEventListener('mousedown', (e) => {
+                    // Bring the currently clicked popup to the front by increasing its z-index.
+                    zIndexCounter++;
+                    popup.style.zIndex = zIndexCounter;
+
+                    // Check if the click occurred on the header to start dragging.
+                    if (e.target.closest('.popup-header')) {
+                        isDragging = true;
+                        startX = e.clientX; // Store the initial mouse X position.
+                        startY = e.clientY; // Store the initial mouse Y position.
+                        currentPopup = popup;
+                        currentPopup.style.position = 'absolute'; // Change position to allow for dynamic top/left updates.
+                        e.preventDefault(); // Prevents default browser actions like text selection.
+                    }
+                });
+            });
+
+            // Add a 'mousemove' event listener to the document to handle dragging.
+            document.addEventListener('mousemove', (e) => {
+                if (isDragging) {
+                    const dx = e.clientX - startX; // Calculate the horizontal distance moved.
+                    const dy = e.clientY - startY; // Calculate the vertical distance moved.
+                    const currentLeft = currentPopup.offsetLeft;
+                    const currentTop = currentPopup.offsetTop;
+                    // Update the popup's position based on the mouse movement.
+                    currentPopup.style.left = `${currentLeft + dx}px`;
+                    currentPopup.style.top = `${currentTop + dy}px`;
+                    // Reset start positions for the next movement.
+                    startX = e.clientX;
+                    startY = e.clientY;
+                }
+            });
+
+            // Add a 'mouseup' event listener to the document to stop dragging.
+            document.addEventListener('mouseup', () => {
+                isDragging = false; // Disable dragging.
+                currentPopup = null; // Clear the reference to the popup.
+            });
+        });
+    </script>
+</body>
+</html>
